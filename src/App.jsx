@@ -7,6 +7,7 @@ const GuestForm = lazy(() => import('./components/GuestForm/GuestForm'));
 const AlreadyRegistertedCard = lazy(() => import('./components/AlreadyRegistertedCard/AlreadyRegistertedCard'));
 const StudentPass = lazy(() => import('./components/StudentPass/StudentPass'));
 const ConfrimPass = lazy(() => import('./components/ConfrimPass/ConfrimPass'));
+import "./App.css";
 
 function App() {
   return (
