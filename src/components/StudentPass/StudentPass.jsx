@@ -5,8 +5,6 @@ import "./StudentPass.css";
 import { FaGraduationCap } from "react-icons/fa6";
 import { HiUserGroup } from "react-icons/hi2";
 import college_logo from "../../assets/college_logo.svg";
-import html2canvas from "html2canvas";
-import jsPDF from "jspdf";
 
 const StudentPass = () => {
   const [guestData, setGuestData] = useState([]);
@@ -37,7 +35,9 @@ const StudentPass = () => {
     }
   }, [guestData]);
 
-  const handlePrint = () => {
+  const handlePrint = async() => {
+    const { default: html2canvas } = await import('html2canvas');
+  const { default: jsPDF } = await import('jspdf');
     const capture = document.querySelector(".printer");
     const button = document.querySelector("button");
     const passContainers = document.querySelectorAll(".generate-pass-sub-container");
