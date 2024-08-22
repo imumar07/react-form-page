@@ -82,10 +82,6 @@ const BoxSystemProps = () => {
     return transformedName;
   }
 
-  // Example usage
-  const fullName = "ATYAM KIRANMAI NAGA VENKATA PRATHYUSHA";
-  const result = transformName(fullName);
-  console.log(result); // Output: A.K.N.V PRATHYUSHA
 
   const handleAadharNumberInputChange = (event) => {
     if (event.target.value.length <= 14) {
