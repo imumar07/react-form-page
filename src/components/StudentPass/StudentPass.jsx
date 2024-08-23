@@ -4,6 +4,7 @@ import axios from "axios";
 import "./StudentPass.css";
 import { FaGraduationCap } from "react-icons/fa6";
 import { HiUserGroup } from "react-icons/hi2";
+import Confetti from "react-confetti";
 import college_logo from "../../assets/college_logo.svg";
 
 const StudentPass = () => {
@@ -35,33 +36,46 @@ const StudentPass = () => {
     }
   }, [guestData]);
 
-  const handlePrint = async() => {
+  const handlePrint = async () => {
     const { default: html2canvas } = await import('html2canvas');
-  const { default: jsPDF } = await import('jspdf');
+    const { default: jsPDF } = await import('jspdf');
+    const confi=document.getElementById("confetti");
     const capture = document.querySelector(".printer");
     const button = document.querySelector("button");
     const passContainers = document.querySelectorAll(".generate-pass-sub-container");
+    const isSingleContainer = passContainers.length === 1;
 
     // Apply temporary styles for PDF generation
     capture.style.backgroundColor = "white";
+    confi.style.display="none";
     capture.style.display = "flex";
     capture.style.flexDirection = "row";
-    capture.style.justifyContent = "center";
+    capture.style.justifyContent = isSingleContainer?"start":"center";
     capture.style.alignItems = "center";
     button.style.display = "none";
-    capture.style.paddingTop="5rem";
-    capture.style.width = "180%";
+    capture.style.width = isSingleContainer?"300%":"180%";
+    capture.style.paddingTop="5rem"; // Adjust if necessary
 
-    // Apply styles for the pass containers to make them side by side
+    // Check the number of pass containers
+   
+
+    // Apply styles for the pass containers based on their count
     passContainers.forEach((container) => {
-        container.style.width = "45%";
+        if (isSingleContainer) {
+            // Set width and height to cover 1/3 of an A4 page
+            container.style.width = "10%"; // 1/3 width
+            container.style.height = "auto"; // Adjust height based on content
+        } else {
+            container.style.width = "45%"; // Adjust for multiple containers
+            container.style.height = "auto"; // Adjust height as needed
+        }
     });
 
     // Capture the content and generate the PDF
     html2canvas(capture).then((canvas) => {
         // Compress the image by reducing quality
         const imgData = canvas.toDataURL("image/jpeg", 0.5); // Reduce the quality to 50%
-        const doc = new jsPDF("l", "em", "a4");
+        const doc = new jsPDF(isSingleContainer ? "p" : "l", "mm", "a4");
 
         // Calculate the size and position of the image on the PDF
         const imgWidth = doc.internal.pageSize.getWidth();
@@ -71,7 +85,7 @@ const StudentPass = () => {
         doc.addImage(imgData, "JPEG", 0, 0, imgWidth, imgHeight, undefined, "FAST"); // Use "FAST" for compression
 
         // Save the PDF
-        doc.save("receipt.pdf");
+        doc.save("Graduation-Pass.pdf");
 
         // Restore original styles after generating the PDF
         button.style.display = "block";
@@ -81,12 +95,13 @@ const StudentPass = () => {
         capture.style.flexDirection = "";
         capture.style.justifyContent = "";
         capture.style.alignItems = "";
-        capture.style.paddingTop="";
-
+        capture.style.paddingTop = "";
+        confi.style.display="none";
 
         // Reset styles for the pass containers
         passContainers.forEach((container) => {
             container.style.width = ""; // Revert to original width
+            container.style.height = ""; // Revert to original height
         });
     });
 };
@@ -95,9 +110,11 @@ const StudentPass = () => {
 
 
 
+
   return (
     <>
       <div className="printer">
+      <Confetti tweenDuration={10000} recycle={false} numberOfPieces={1000} id="confetti"/>
         <div className="generate-pass-main-container">
           <div className="generate-pass-sub-container">
             <div className="generate-pass-inner-cont">

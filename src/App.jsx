@@ -17,7 +17,7 @@ function App() {
           <Route path="/" element={<FormComponent />} />
           <Route path="/userform" element={<UserForm />} />
           <Route path="/guestForm" element={<GuestForm />} />
-          <Route path="/alreadyRegistered" element={<AlreadyRegistertedCard />} />
+          <Route path="/alreadyRegisteredCard" element={<AlreadyRegistertedCard />} />
           <Route path="/generatePass" element={<StudentPass />} />
           <Route path="/confrimPass" element={<ConfrimPass />} />
         </Routes>

@@ -40,10 +40,12 @@ const UserForm = () => {
     const roll_no = localStorage.getItem("roll_no");
     const name = localStorage.getItem("name");
     const branch = localStorage.getItem("branch");
-
+  
     // Log the retrieved values for debugging purposes
     console.log("Roll No:", roll_no, "Name:", name, "Branch:", branch);
-    setYesLoading(true)
+    
+    setYesLoading(true);
+  
     axios
       .post("http://34.132.254.89/insert_attendees", {
         roll_no: roll_no,
@@ -51,18 +53,25 @@ const UserForm = () => {
         branch: branch,
       })
       .then((response) => {
-        setYesLoading(false)
+        setYesLoading(false);
         if (response.status === 201) {
           console.log("success");
-          navigate("/guestForm"); // Redirect to the guest form
+          navigate("/guestForm"); 
         } else {
           console.error("Failed to insert attendee:", response.data.message);
         }
       })
       .catch((error) => {
-        console.error("Error in POST request:", error);
+        setYesLoading(false); // Make sure to stop loading on error as well
+        if (error.response && error.response.status === 409) {
+          navigate("/alreadyRegisteredCard"); 
+          console.error("Duplicate entry found:", error.response.data.error);
+        } else {
+          console.error("Error in POST request:", error);
+        }
       });
   };
+  
 
   const handleNoChange = () => {
     // setModalOpen(true);
@@ -112,11 +121,6 @@ const UserForm = () => {
           <div className="container">
             <div>
               <div className="column-container">
-                {/* <img
-                  src={userimage}
-                  alt="User"
-                  style={{ width: "75px", height: "75px" }}
-                /> */}
                 <FontAwesomeIcon size="5x" icon={faUserGraduate} />
               </div>
               <div className="column-container">
