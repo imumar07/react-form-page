@@ -44,9 +44,9 @@ const StudentPass = () => {
 
   // Handle PDF generation
   useEffect(() => {
-    if (!pdfGenerated.current && guestData.length > 0) {
+    if (!pdfGenerated.current) {
+      pdfGenerated.current = true; // Set flag to true before PDF generation
       handlePrint();
-      pdfGenerated.current = true; // Set flag to true after PDF generation
     }
   }, [guestData]); // This useEffect runs whenever guestData is updated
 
@@ -162,9 +162,6 @@ const StudentPass = () => {
                   className="generate-pass-college-logo"
                   style={{
                     backgroundImage: `url(${college_logo})`,
-                    backgroundSize: "contain",
-                    backgroundPosition: "center",
-                    backgroundRepeat: "no-repeat",
                   }}
                 ></div>
                 <div className="generate-pass-icon">
