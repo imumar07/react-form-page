@@ -50,7 +50,7 @@ const StudentPass = () => {
     confi.style.display="none";
     capture.style.display = "flex";
     capture.style.flexDirection = "row";
-    capture.style.justifyContent = isSingleContainer?"start":"center";
+    capture.style.justifyContent = "center";
     capture.style.alignItems = "center";
     button.style.display = "none";
     capture.style.width = isSingleContainer?"300%":"180%";
