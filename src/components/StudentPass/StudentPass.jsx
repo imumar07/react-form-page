@@ -1,60 +1,43 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "./StudentPass.css";
 import { FaGraduationCap } from "react-icons/fa6";
 import { HiUserGroup } from "react-icons/hi2";
+import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import Confetti from "react-confetti";
+import { storage } from "../../firebase";
 import college_logo from "../../assets/college_logo.svg";
 
 const StudentPass = () => {
   const [guestData, setGuestData] = useState([]);
-  const pdfGenerated = useRef(false);
 
-  // API call to fetch guest data
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get("http://34.132.254.89/get_attendees", {
-          params: {
-            roll_no: localStorage.getItem("roll_no"),
-          },
-        });
-        if (response.status === 200 && Array.isArray(response.data) && response.data.length > 0) {
-          setGuestData(response.data);
-        } else {
-          setGuestData([]); // Clear guestData if no valid data
+  const storeToFirebase = async (pdfBlob) => {
+    try {
+      const storageRef = ref(storage, `passes/Graduation-Pass-${localStorage.getItem("roll_no")}.pdf`);
+      const uploadTask = uploadBytesResumable(storageRef, pdfBlob);
+
+      uploadTask.on(
+        "state_changed",
+        null,
+        (error) => {
+          console.error("Upload failed:", error);
+        },
+        async () => {
+          const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+          console.log("File available at", downloadURL);
         }
-      } catch (error) {
-        console.error("Error in GET request:", error);
-        setGuestData([]); // Clear guestData on error
-      }
-    };
-
-    fetchData();
-
-    // Load guest data from localStorage
-    const data = localStorage.getItem("guestData");
-    if (data) {
-      const parsedData = JSON.parse(data);
-      if (Array.isArray(parsedData) && parsedData.length > 0) {
-        setGuestData(parsedData);
-      }
+      );
+    } catch (error) {
+      console.error("Error storing PDF to Firebase:", error);
     }
-  }, []); // Empty dependency array ensures this useEffect runs only once on mount
+  };
 
-  // Handle PDF generation
-  useEffect(() => {
-    if (!pdfGenerated.current) {
-      pdfGenerated.current = true; // Set flag to true before PDF generation
-      handlePrint();
-    }
-  }, [guestData]); // This useEffect runs whenever guestData is updated
+  const handleSave = async () => {
+    const { default: html2canvas } = await import("html2canvas");
+    const { default: jsPDF } = await import("jspdf");
 
-  const handlePrint = async () => {
-    const { default: html2canvas } = await import('html2canvas');
-    const { default: jsPDF } = await import('jspdf');
-    const confi = document.getElementById("confetti");
     const capture = document.querySelector(".printer");
+    const confi = document.getElementById("confetti");
     const button = document.querySelector("button");
     const passContainers = document.querySelectorAll(".generate-pass-sub-container");
     const isSingleContainer = passContainers.length === 1;
@@ -68,53 +51,114 @@ const StudentPass = () => {
     capture.style.alignItems = "center";
     button.style.display = "none";
     capture.style.width = isSingleContainer ? "300%" : "180%";
-    capture.style.paddingTop = "5rem"; // Adjust if necessary
+    capture.style.paddingTop = "5rem";
 
-    // Apply styles for the pass containers based on their count
     passContainers.forEach((container) => {
-      if (isSingleContainer) {
-        container.style.width = "10%"; // 1/3 width
-        container.style.height = "auto"; // Adjust height based on content
-      } else {
-        container.style.width = "45%"; // Adjust for multiple containers
-        container.style.height = "auto"; // Adjust height as needed
-      }
+      container.style.width = isSingleContainer ? "10%" : "45%";
+      container.style.height = "auto";
     });
 
     // Capture the content and generate the PDF
-    html2canvas(capture).then((canvas) => {
-      // Compress the image by reducing quality
-      const imgData = canvas.toDataURL("image/jpeg", 0.5); // Reduce the quality to 50%
-      const doc = new jsPDF(isSingleContainer ? "p" : "l", "mm", "a4");
+    const canvas = await html2canvas(capture);
+    const imgData = canvas.toDataURL("image/jpeg", 0.5);
+    const doc = new jsPDF(isSingleContainer ? "p" : "l", "mm", "a4");
 
-      // Calculate the size and position of the image on the PDF
-      const imgWidth = doc.internal.pageSize.getWidth();
-      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+    const imgWidth = doc.internal.pageSize.getWidth();
+    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+    doc.addImage(imgData, "JPEG", 0, 0, imgWidth, imgHeight, undefined, "FAST");
 
-      // Add the image with compression settings
-      doc.addImage(imgData, "JPEG", 0, 0, imgWidth, imgHeight, undefined, "FAST"); // Use "FAST" for compression
+    const pdfBlob = doc.output("blob");
 
-      // Save the PDF
-      doc.save("Graduation-Pass.pdf");
+    // Store the generated PDF to Firebase
+    await storeToFirebase(pdfBlob);
 
-      // Restore original styles after generating the PDF
-      button.style.display = "block";
-      capture.style.width = "";
-      capture.style.backgroundColor = "";
-      capture.style.display = "";
-      capture.style.flexDirection = "";
-      capture.style.justifyContent = "";
-      capture.style.alignItems = "";
-      capture.style.paddingTop = "";
-      confi.style.display = "block"; // Restore display to block
+    // Restore original styles after generating the PDF
+    button.style.display = "block";
+    capture.style.width = "";
+    capture.style.backgroundColor = "";
+    capture.style.display = "";
+    capture.style.flexDirection = "";
+    capture.style.justifyContent = "";
+    capture.style.alignItems = "";
+    capture.style.paddingTop = "";
+    confi.style.display = "block";
 
-      // Reset styles for the pass containers
-      passContainers.forEach((container) => {
-        container.style.width = ""; // Revert to original width
-        container.style.height = ""; // Revert to original height
-      });
+    passContainers.forEach((container) => {
+      container.style.width = "";
+      container.style.height = "";
     });
   };
+
+  const handlePrint = async () => {
+    const { default: html2canvas } = await import("html2canvas");
+    const { default: jsPDF } = await import("jspdf");
+
+    const capture = document.querySelector(".printer");
+    const passContainers = document.querySelectorAll(".generate-pass-sub-container");
+    const isSingleContainer = passContainers.length === 1;
+
+    // Apply temporary styles for PDF generation
+    capture.style.backgroundColor = "white";
+    capture.style.display = "flex";
+    capture.style.flexDirection = "row";
+    capture.style.justifyContent = "center";
+    capture.style.alignItems = "center";
+    capture.style.width = isSingleContainer ? "300%" : "180%";
+    capture.style.paddingTop = "5rem";
+
+    passContainers.forEach((container) => {
+      container.style.width = isSingleContainer ? "10%" : "45%";
+      container.style.height = "auto";
+    });
+
+    // Capture the content and generate the PDF
+    const canvas = await html2canvas(capture);
+    const imgData = canvas.toDataURL("image/jpeg", 0.5);
+    const doc = new jsPDF(isSingleContainer ? "p" : "l", "mm", "a4");
+
+    const imgWidth = doc.internal.pageSize.getWidth();
+    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+    doc.addImage(imgData, "JPEG", 0, 0, imgWidth, imgHeight, undefined, "FAST");
+
+    doc.save(`Graduation Pass.pdf`);
+
+    // Restore original styles after generating the PDF
+    capture.style.width = "";
+    capture.style.backgroundColor = "";
+    capture.style.display = "";
+    capture.style.flexDirection = "";
+    capture.style.justifyContent = "";
+    capture.style.alignItems = "";
+    capture.style.paddingTop = "";
+
+    passContainers.forEach((container) => {
+      container.style.width = "";
+      container.style.height = "";
+    });
+  };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get("http://34.132.254.89/get_attendees", {
+          params: {
+            roll_no: localStorage.getItem("roll_no"),
+          },
+        });
+        if (response.status === 200 && Array.isArray(response.data) && response.data.length > 0) {
+          setGuestData(response.data);
+          handleSave();
+        } else {
+          setGuestData([]);
+        }
+      } catch (error) {
+        console.error("Error in GET request:", error);
+        setGuestData([]);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   return (
     <>
@@ -133,10 +177,7 @@ const StudentPass = () => {
                 }}
               ></div>
               <div className="generate-pass-icon">
-                <FaGraduationCap
-                  style={{ width: "100px", height: "100px" }}
-                  className="cap"
-                />
+                <FaGraduationCap style={{ width: "100px", height: "100px" }} className="cap" />
                 <h1 style={{ fontSize: "1.3rem" }}>Happy Graduation</h1>
               </div>
               <div className="generate-pass-title">
@@ -165,10 +206,7 @@ const StudentPass = () => {
                   }}
                 ></div>
                 <div className="generate-pass-icon">
-                  <HiUserGroup
-                    style={{ width: "100px", height: "100px" }}
-                    className="cap"
-                  />
+                  <HiUserGroup style={{ width: "100px", height: "100px" }} className="cap" />
                 </div>
                 <div className="generate-pass-title">
                   <h4>GUEST ENTRY PASS</h4>
