@@ -104,7 +104,7 @@ const GuestForm = () => {
       localStorage.setItem("attendees", JSON.stringify(attendees))
       navigate("/confrimPass")
       // axios
-      //   .post("http://34.132.254.89/insert_guests", attendees)
+      //   .post(`${Api}insert_guests", attendees)
       //   .then((response) => {
       //     console.log(response.status);
       //     if (response.status === 201) {

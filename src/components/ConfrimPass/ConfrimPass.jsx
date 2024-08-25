@@ -3,40 +3,73 @@ import React from 'react';
 import logo from "../../assets/college_logo.svg";
 import { useNavigate } from "react-router-dom";
 import { GiConfirmed } from "react-icons/gi";
+import CircularProgress from "@mui/material/CircularProgress";
 import { FaEdit } from "react-icons/fa";
+import Api from "../../data/ApiData";
 import axios from "axios";
+
+
 const ConfrimPass = () => {
-    const navigate = useNavigate();
+  const [loder, setLoder] = React.useState(false);
+  const navigate = useNavigate();
   // Retrieve the stored attendees data and parse it
   const attendees = JSON.parse(localStorage.getItem("attendees")) || [];
-    const handleReEnter=()=>{
-        navigate("/guestForm")
-    }
-    const handleConfrim = () => {
-      // Determine if the attendees list is empty
-      const isEmpty = attendees.length === 0;
-      // Prepare the request payload
-      const payload = {
-        attendees: attendees,   // or just `attendees` if ES6 shorthand is used
-        empty: isEmpty,
-      };
-    
-      axios
-        .post("http://34.132.254.89/insert_guests", payload)
-        .then((response) => {
-          console.log(response.status);
-          if (response.status === 201 || response.status === 200) {
-            console.log("success");
-            navigate("/generatePass");
-          } else {
-            console.error("Failed to insert guest:", response.data.message);
-          }
-        })
-        .catch((error) => {
-          console.error("Error in POST request:", error);
-        });
+  const handleReEnter = () => {
+    navigate("/guestForm")
+  }
+  const handleConfrim = async () => {
+    setLoder(true);
+    // Determine if the attendees list is empty
+    const isEmpty = attendees.length === 0;
+    // Prepare the request payload
+    const payload = {
+      attendees: attendees,   // or just `attendees` if ES6 shorthand is used
+      empty: isEmpty,
     };
-    
+
+    const roll_no = localStorage.getItem("roll_no");
+    const name = localStorage.getItem("name");
+    const branch = localStorage.getItem("branch");
+    const program = localStorage.getItem("program");
+    const batch = localStorage.getItem("batch");
+
+
+    await axios
+      .post(`${Api}/insert_attendees`, {
+        roll_no: roll_no,
+        name: name,
+        branch: branch,
+        program: program,
+        batch: batch,
+      })
+      .then((response) => {
+        if (response.status === 201) {
+          console.log("success");
+        } else {
+          console.error("Failed to insert attendee:", response.data.message);
+        }
+      })
+      .catch((error) => {
+        console.error("Error in POST request:", error);
+      });
+
+    await axios
+      .post(`${Api}/insert_guests`, payload)
+      .then((response) => {
+        setLoder(false);
+        console.log(response.status);
+        if (response.status === 201 || response.status === 200) {
+          console.log("success");
+          navigate("/generatePass");
+        } else {
+          console.error("Failed to insert guest:", response.data.message);
+        }
+      })
+      .catch((error) => {
+        console.error("Error in POST request:", error);
+      });
+  };
+
   return (
     <>
       <div className="college-logo-div">
@@ -51,6 +84,7 @@ const ConfrimPass = () => {
                 <li>Student Name: {localStorage.getItem("name")}</li>
                 <li>Roll No: {localStorage.getItem("roll_no")}</li>
                 <li>Branch: {localStorage.getItem("branch")}</li>
+                <li>Program: {localStorage.getItem("program")}</li>
               </ul>
             </div>
 
@@ -68,10 +102,19 @@ const ConfrimPass = () => {
                 ))}
               </div>
             )}
-            <p style={{color:'',paddingBottom:"0.3rem"}}>* Pass can't be generated again *</p>
-            <div style={{display:"flex",flexDirection:"row",justifyContent:"center",alignItems:"center",gap:"15px"}}>
-                <button className="button-proceed-yes" onClick={handleConfrim} style={{display:"flex",flexDirection: "row", justifyContent:"center",alignItems:"center",gap:"6px" }}><GiConfirmed /> Confirm</button>
-                <button className="button-proceed-yes" onClick={handleReEnter} style={{display:"flex",flexDirection: "row", justifyContent:"center",alignItems:"center",gap:"6px" }}><FaEdit/> Modify</button>
+            <p style={{ color: '', paddingBottom: "0.3rem" }}>* Pass can't be generated again *</p>
+            <div style={{ display: "flex", flexDirection: "row", justifyContent: "center", alignItems: "center", gap: "15px" }}>
+              {loder ? (
+                <button className="button-proceed-yes" style={{ display: "flex", flexDirection: "row", justifyContent: "center", alignItems: "center", gap: "6px" }}>
+                  <CircularProgress color="inherit" />
+                </button>
+              ) :
+                (
+                  <div style={{ display: "flex", flexDirection: "row", justifyContent: "center", alignItems: "center", gap: "15px" }}>
+                    <button className="button-proceed-yes" onClick={handleConfrim} style={{ display: "flex", flexDirection: "row", justifyContent: "center", alignItems: "center", gap: "6px" }}><GiConfirmed /> Confirm</button>
+                    <button className="button-proceed-yes" onClick={handleReEnter} style={{ display: "flex", flexDirection: "row", justifyContent: "center", alignItems: "center", gap: "6px" }}><FaEdit /> Modify</button>
+                  </div>
+                )}
             </div>
           </div>
         </div>

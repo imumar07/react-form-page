@@ -21,17 +21,17 @@ const FormComponent = () => {
           <img src={logo} alt="logo" className="college-logo" />
         </div>
         <ToastContainer
-position="top-center"
-theme="light"
-autoClose={3000}
-hideProgressBar
-newestOnTop={false}
-closeOnClick
-rtl={false}
-pauseOnFocusLoss
-draggable
-pauseOnHover
-/>
+        position="top-center"
+        theme="light"
+        autoClose={3000}
+        hideProgressBar
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        />
         <div className="custom-form-container">
           <h1>Registration</h1>
           <BoxSystemProps />

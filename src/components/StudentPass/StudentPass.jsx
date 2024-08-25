@@ -5,6 +5,7 @@ import { FaGraduationCap } from "react-icons/fa6";
 import { HiUserGroup } from "react-icons/hi2";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import Confetti from "react-confetti";
+import Api from "../../data/ApiData";
 import { storage } from "../../firebase";
 import college_logo from "../../assets/college_logo.svg";
 
@@ -12,6 +13,7 @@ const StudentPass = () => {
   const [guestData, setGuestData] = useState([]);
 
   const storeToFirebase = async (pdfBlob) => {
+    console.log("Storing PDF to Firebase...");
     try {
       const storageRef = ref(storage, `passes/Graduation-Pass-${localStorage.getItem("roll_no")}.pdf`);
       const uploadTask = uploadBytesResumable(storageRef, pdfBlob);
@@ -25,6 +27,16 @@ const StudentPass = () => {
         async () => {
           const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
           console.log("File available at", downloadURL);
+          localStorage.setItem("pass_url", downloadURL);
+          axios.post(`${Api}/insert_pass_url`, {
+            roll_no: localStorage.getItem("roll_no"),
+            pass_url: downloadURL,
+          }).then((response) => {
+            console.log(response.data);
+          }
+          ).catch((error) => {
+            console.error("Error storing PDF URL:", error);
+          });
         }
       );
     } catch (error) {
@@ -140,21 +152,22 @@ const StudentPass = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("http://34.132.254.89/get_attendees", {
+        axios.get(`${Api}/get_attendees`, {
           params: {
             roll_no: localStorage.getItem("roll_no"),
           },
-        });
-        if (response.status === 200 && Array.isArray(response.data) && response.data.length > 0) {
+        }).then((response) => {
+          console.log(response.data);
           setGuestData(response.data);
-          handleSave();
-        } else {
-          setGuestData([]);
-        }
+        })
+          .catch((error) => {
+            console.error("Error in GET request:", error);
+          });
       } catch (error) {
         console.error("Error in GET request:", error);
         setGuestData([]);
       }
+      handleSave();
     };
 
     fetchData();
@@ -187,6 +200,7 @@ const StudentPass = () => {
                 <span>Name : {localStorage.name}</span>
                 <span>Regd No : {localStorage.roll_no}</span>
                 <span>Branch : {localStorage.branch}</span>
+                {localStorage.program !== "MBA" && <span>Program : {localStorage.program}</span>}
               </div>
               <div className="generate-pass-note">
                 <p>* Please collect entry pass from the security *</p>
@@ -203,6 +217,9 @@ const StudentPass = () => {
                   className="generate-pass-college-logo"
                   style={{
                     backgroundImage: `url(${college_logo})`,
+                    backgroundSize: "contain",
+                    backgroundPosition: "center",
+                    backgroundRepeat: "no-repeat",
                   }}
                 ></div>
                 <div className="generate-pass-icon">

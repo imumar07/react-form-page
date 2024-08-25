@@ -1,7 +1,7 @@
 // eslint-disable-next-line no-unused-vars
 import React, { useState } from "react";
 import axios from "axios";
-
+import Api from "../data/ApiData";
 import { ToastContainer, toast } from "react-toastify";
 import { Bounce } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -109,26 +109,27 @@ const BoxSystemProps = () => {
     event.preventDefault();
     const rollNo = rollNumberInput;
     const aadharNo = aadharNumberInput;
-    const rollNumberPattern1 = /^21A85A[A-Z0-9]{4}$/;
-    const rollNumberPattern2 = /^20A81A[A-Z0-9]{4}$/;
-    const rollNumberPattern3 = /^21A81D[A-Z0-9]{4}$/;
-    const rollNumberPattern4 = /^22A81D[A-Z0-9]{4}$/;
-    const rollNumberPattern5 = /^21A81E[A-Z0-9]{4}$/;
-  
+    // const rollNumberPattern1 = /^21A85A[A-Z0-9]{4}$/;
+    // const rollNumberPattern2 = /^20A81A[A-Z0-9]{4}$/;
+    // const rollNumberPattern3 = /^21A81D[A-Z0-9]{4}$/;
+    // const rollNumberPattern4 = /^22A81D[A-Z0-9]{4}$/;
+    // const rollNumberPattern5 = /^21A81E[A-Z0-9]{4}$/;
+    const rollNumberPattern1 = /^2[A-Z0-9]{9}$/;
+
     let isValid = true;
-  
+
     // Roll Number Validation
-    if (!rollNumberPattern1.test(rollNo) && 
-        !rollNumberPattern2.test(rollNo) &&
-        !rollNumberPattern3.test(rollNo) &&
-        !rollNumberPattern4.test(rollNo) &&
-        !rollNumberPattern5.test(rollNo)) {
+    if (!rollNumberPattern1.test(rollNo) &&
+      !rollNumberPattern2.test(rollNo) &&
+      !rollNumberPattern3.test(rollNo) &&
+      !rollNumberPattern4.test(rollNo) &&
+      !rollNumberPattern5.test(rollNo)) {
       setRollNumberError("* Please enter a valid Roll Number");
       isValid = false;
     } else {
       setRollNumberError("");
     }
-  
+
     // Aadhar Number Validation
     if (aadharNo.length !== 14) {
       setAadharNumberError("* Please enter a valid Aadhar Number");
@@ -140,11 +141,12 @@ const BoxSystemProps = () => {
       alert("Please select a branch");
       isValid = false;
     }
-  
+
     if (isValid) {
       setLoading(true);
+      branch === "M.Tech" ? setBranch("M_TECH") : setBranch(branch);
       await axios
-        .get("http://34.132.254.89/authenticate", {
+        .get(`${Api}/authenticate`, {
           params: {
             roll_no: rollNo,
             aadhar: aadharNo,
@@ -152,7 +154,7 @@ const BoxSystemProps = () => {
           },
         })
         .then((response) => {
-          
+
           console.log(response.status);
           if (response.status === 200) {
             notifySuccess()
@@ -165,11 +167,11 @@ const BoxSystemProps = () => {
                 localStorage.setItem(i, dataReceived[i]);
               }
             }
-            setTimeout(()=>{
+            setTimeout(() => {
               navigate("/userForm");
-            },1000)
+            }, 1000)
           }
-          
+
         })
         .catch((error) => {
           setLoading(false);
@@ -178,11 +180,11 @@ const BoxSystemProps = () => {
         });
     }
   };
-  
+
 
   return (
     <Container>
-     
+
       <Box
         onSubmit={handleSubmit}
         component="form"
@@ -193,21 +195,21 @@ const BoxSystemProps = () => {
           mt: 4,
         }}
       >
-         <>
-        <ToastContainer
-          position="top-center"
-          autoClose={5000}
-          hideProgressBar={false}
-          newestOnTop={false}
-          closeOnClick
-          rtl={false}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-          theme="dark"
-          transition:Bounce
-        />
-      </>
+        <>
+          <ToastContainer
+            position="top-center"
+            autoClose={5000}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+            theme="dark"
+            transition:Bounce
+          />
+        </>
         <FormControl
           sx={{
             mb: 2,

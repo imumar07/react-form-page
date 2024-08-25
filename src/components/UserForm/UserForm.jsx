@@ -10,8 +10,8 @@ import CircularProgress from "@mui/material/CircularProgress";
 import logo from "../../assets/college_logo.svg";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUserGraduate } from "@fortawesome/free-solid-svg-icons";
+import Api from "../../data/ApiData";
 // import { Button, Modal, Box, Typography } from "@mui/material";
-// import { storage } from '../../firebase';
 
 // import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import "./UserForm.css";
@@ -22,6 +22,7 @@ const UserForm = () => {
   const [yesLoading, setYesLoading] = useState(false);
   const rollNo = localStorage.getItem("roll_no");
   const aadhar = localStorage.getItem("aadhar");
+
 
   const hasMounted = React.useRef(false);
   // const [modalOpen, setModalOpen] = useState(false);
@@ -40,48 +41,18 @@ const UserForm = () => {
       handleAlreadyRegisterd();
       hasMounted.current = true;
     }
-  }, [rollNo, aadhar, navigate]);
+  }, []);
 
   const handleYesChange = () => {
-    const roll_no = localStorage.getItem("roll_no");
-    const name = localStorage.getItem("name");
-    const branch = localStorage.getItem("branch");
+    // const roll_no = localStorage.getItem("roll_no");
+    // const name = localStorage.getItem("name");
+    // const branch = localStorage.getItem("branch");
+    // const program = localStorage.getItem("program");
+    // const batch = localStorage.getItem("batch");
 
-    // Log the retrieved values for debugging purposes
-    console.log("Roll No:", roll_no, "Name:", name, "Branch:", branch);
-
-    setYesLoading(true);
-
-    axios
-      .post("http://34.132.254.89/insert_attendees", {
-        roll_no: roll_no,
-        name: name,
-        branch: branch,
-      })
-      .then((response) => {
-        setYesLoading(false);
-        if (response.status === 201) {
-          console.log("success");
-          navigate("/guestForm");
-        } else {
-          console.error("Failed to insert attendee:", response.data.message);
-        }
-      })
-      .catch((error) => {
-        setYesLoading(false);
-        if (error.response && error.response.status === 409) {
-          notify("Your response is already stored please download the pass 😇");
-          navigate("/alreadyRegisteredCard");
-          setTimeout(() => {
-            localStorage.clear();
-            navigate("/alreadyRegisteredCard");
-          }, 2500)
-          console.error("Duplicate entry found:", error.response.data.error);
-        } else {
-          console.error("Error in POST request:", error);
-        }
-        console.error("Error in POST request:", error);
-      });
+    // // Log the retrieved values for debugging purposes
+    // console.log("Roll No:", roll_no, "Name:", name, "Branch:", branch, "Program:", program, "Batch:", batch);
+    navigate("/guestForm");
   };
 
   const handleAlreadyRegisterd = () => {
@@ -95,7 +66,7 @@ const UserForm = () => {
     setYesLoading(true);
 
     axios
-      .post("http://34.132.254.89/check_attendees", {
+      .post(`${Api}/check_attendees`, {
         roll_no: roll_no,
         branch: branch,
       })
@@ -104,12 +75,11 @@ const UserForm = () => {
         if (response.status === 200) {
           notify("Your response is already stored please download the pass 😇");
           setTimeout(() => {
-            localStorage.clear();
             navigate("/alreadyRegisteredCard");
           }, 2500)
-          console.error("Duplicate entry found:", error.response.data.error);
+          console.error("Already registered:", error.response.data.error);
         } else {
-          console.error("Failed to insert attendee:", response.data.message);
+          console.error("Failed to check", response.data.message);
         }
       })
       .catch((error) => {
@@ -181,7 +151,12 @@ const UserForm = () => {
                   {localStorage.getItem("roll_no")}
                 </p>
               </div>
-
+              <div className="column-container">
+                <p style={{ fontWeight: "bold" }}>
+                  {localStorage.getItem("program") === "MBA" ? localStorage.getItem("branch") :
+                    localStorage.getItem("program") + "/" + localStorage.getItem("branch")}
+                </p>
+              </div>
               <div className="descp">
                 <p>Are you willing to attend?</p>
               </div>
