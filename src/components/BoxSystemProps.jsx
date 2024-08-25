@@ -119,11 +119,7 @@ const BoxSystemProps = () => {
     let isValid = true;
 
     // Roll Number Validation
-    if (!rollNumberPattern1.test(rollNo) &&
-      !rollNumberPattern2.test(rollNo) &&
-      !rollNumberPattern3.test(rollNo) &&
-      !rollNumberPattern4.test(rollNo) &&
-      !rollNumberPattern5.test(rollNo)) {
+    if (!rollNumberPattern1.test(rollNo)) {
       setRollNumberError("* Please enter a valid Roll Number");
       isValid = false;
     } else {
