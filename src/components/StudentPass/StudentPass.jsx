@@ -77,7 +77,7 @@ const StudentPass = () => {
   }, []);
 
   useEffect(() => {
-    if (!pdfGenerated.current && guestData.length > 0) {
+    if ( !pdfGenerated.current ) {
       handlePrint();
       pdfGenerated.current = true; // Set flag to true after PDF generation
     }
@@ -152,6 +152,9 @@ const StudentPass = () => {
             </div>
           </div>
         ))}
+      </div>
+      <div style={{ display: "flex", flexDirection: "row", justifyContent: "center", alignItems: "center" }}>
+        <button id="printPDFButton" onClick={handlePrint}>Download Pass</button>
       </div>
     </>
   );

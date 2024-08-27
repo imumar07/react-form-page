@@ -59,7 +59,7 @@ const AlreadyRegisteredCard = () => {
           <FaCheckCircle /> Response Submitted
         </h1>
         <div className="submit-btn">
-          <button type="button">
+          <button type="button" >
             <a href={passUrl} target="_blank" rel="noopener noreferrer"
               style={{
                 textDecoration: "none",
