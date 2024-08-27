@@ -144,7 +144,6 @@ const BoxSystemProps = () => {
 
     if (isValid) {
       setLoading(true);
-      branch === "M.Tech" ? setBranch("M_TECH") : setBranch(branch);
       await axios
         .get(`${Api}/authenticate`, {
           params: {
@@ -286,7 +285,7 @@ const BoxSystemProps = () => {
             <MenuItem value={"MECH"}>MECH</MenuItem>
             <MenuItem value={"CIVIL"}>CIVIL</MenuItem>
             <MenuItem value={"MBA"}>MBA</MenuItem>
-            <MenuItem value={"MTECH"}>MTECH</MenuItem>
+            <MenuItem value={"M_TECH"}>MTECH</MenuItem>
           </Select>
         </FormControl>
 

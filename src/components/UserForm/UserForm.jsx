@@ -77,7 +77,7 @@ const UserForm = () => {
           setTimeout(() => {
             navigate("/alreadyRegisteredCard");
           }, 2500)
-          console.error("Already registered:", error.response.data.error);
+          console.error("Already registered:");
         } else {
           console.error("Failed to check", response.data.message);
         }

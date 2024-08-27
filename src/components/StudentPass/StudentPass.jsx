@@ -152,22 +152,20 @@ const StudentPass = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        axios.get(`${Api}/get_attendees`, {
+        const response = await axios.get(`${Api}/get_attendees`, {
           params: {
             roll_no: localStorage.getItem("roll_no"),
           },
-        }).then((response) => {
-          console.log(response.data);
-          setGuestData(response.data);
-        })
-          .catch((error) => {
-            console.error("Error in GET request:", error);
-          });
+        });
+        console.log(response.data);
+        setGuestData(response.data);
       } catch (error) {
         console.error("Error in GET request:", error);
         setGuestData([]);
+      } finally {
+        await handleSave();
+        await handlePrint();
       }
-      handleSave();
     };
 
     fetchData();
@@ -199,8 +197,8 @@ const StudentPass = () => {
               <div className="generate-pass-details">
                 <span>Name : {localStorage.name}</span>
                 <span>Regd No : {localStorage.roll_no}</span>
-                <span>Branch : {localStorage.branch}</span>
-                {localStorage.program !== "MBA" && <span>Program : {localStorage.program}</span>}
+                {localStorage.branch !== "MBA" && <span>branch : {localStorage.branch}</span>}
+                <span>Program : {localStorage.program}</span>
               </div>
               <div className="generate-pass-note">
                 <p>* Please collect entry pass from the security *</p>
