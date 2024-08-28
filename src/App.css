@@ -35,3 +35,27 @@ body {
   padding: 1rem;
   border-radius: 10px;
 }
+.submit-btn {
+  display: flex;
+  justify-content: center;
+  margin-top: 0.4rem;
+}
+
+.submit-btn button {
+  width: fit-content;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  height: 40px;
+  background-color: black;
+  border-radius: 5px;
+  border: none;
+  color: white;
+  font-size: 1rem;
+  transition: background-color 0.3s, transform 0.3s;
+  cursor: pointer;
+}
+
+.submit-btn button:hover {
+  background-color: black;
+  transform: scale(1.05);
+}

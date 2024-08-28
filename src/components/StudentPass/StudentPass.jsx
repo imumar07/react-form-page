@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-unused-vars
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "./StudentPass.css";
@@ -14,7 +15,7 @@ const StudentPass = () => {
 
   const storeToFirebase = async (pdfBlob) => {
     try {
-      const storageRef = ref(storage, `passes/Graduation-Pass-${localStorage.getItem("roll_no")}.pdf`);
+      const storageRef = ref(storage, `passes/Graduation-Pass-${sessionStorage.getItem("roll_no")}.pdf`);
       const uploadTask = uploadBytesResumable(storageRef, pdfBlob);
 
       uploadTask.on(
@@ -25,7 +26,10 @@ const StudentPass = () => {
         },
         async () => {
           const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
-          console.log("File available at", downloadURL);
+          axios.post(`${Api}/insert_pass_url`, {
+            roll_no: sessionStorage.getItem("roll_no"),
+            pass_url: downloadURL,
+          });
         }
       );
     } catch (error) {
@@ -121,7 +125,7 @@ const StudentPass = () => {
     const imgHeight = (canvas.height * imgWidth) / canvas.width;
     doc.addImage(imgData, "JPEG", 0, 0, imgWidth, imgHeight, undefined, "FAST");
 
-    doc.save(`Graduation Pass.pdf`);
+    doc.save(`Graduation-Pass-${sessionStorage.getItem("roll_no")}.pdf`);
 
     // Restore original styles after generating the PDF
     capture.style.width = "";
@@ -144,7 +148,7 @@ const StudentPass = () => {
       try {
         const response = await axios.get(`${Api}/get_attendees`, {
           params: {
-            roll_no: localStorage.getItem("roll_no"),
+            roll_no: sessionStorage.getItem("roll_no"),
           },
         });
         console.log(response.data);
@@ -186,12 +190,12 @@ const StudentPass = () => {
                 <h4>STUDENT ENTRY PASS</h4>
               </div>
               <div className="generate-pass-details">
-                <span>Name : {localStorage.name}</span>
-                <span>Regd No : {localStorage.roll_no}</span>
-                <span>Branch : {localStorage.branch}</span>
+                <span>Name : {sessionStorage.name}</span>
+                <span>Regd No : {sessionStorage.roll_no}</span>
+                <span>Branch : {sessionStorage.branch}</span>
               </div>
               <div className="generate-pass-note">
-                <p>* Please collect entry pass from the security *</p>
+                <p>* Please carry pass for entry *</p>
               </div>
             </div>
           </div>
@@ -205,6 +209,9 @@ const StudentPass = () => {
                   className="generate-pass-college-logo"
                   style={{
                     backgroundImage: `url(${college_logo})`,
+                    backgroundSize: "contain",
+                  backgroundPosition: "center",
+                  backgroundRepeat: "no-repeat",
                   }}
                 ></div>
                 <div className="generate-pass-icon">
@@ -214,10 +221,10 @@ const StudentPass = () => {
                   <h4>GUEST ENTRY PASS</h4>
                 </div>
                 <div className="generate-pass-details">
-                  <span>Student Name : {localStorage.name}</span>
+                  <span>Student Name : {sessionStorage.name}</span>
                   <span>Guest Name : {guest.guest_name}</span>
                   <span>Relation : {guest.relation}</span>
-                  <span>Student Regd No : {localStorage.roll_no}</span>
+                  <span>Student Regd No : {sessionStorage.roll_no}</span>
                   <span>Phone No : {guest.phone_no}</span>
                 </div>
                 <div className="generate-pass-note">

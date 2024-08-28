@@ -13,7 +13,7 @@ const ConfrimPass = () => {
   const [loder, setLoder] = React.useState(false);
   const navigate = useNavigate();
   // Retrieve the stored attendees data and parse it
-  const attendees = JSON.parse(localStorage.getItem("attendees")) || [];
+  const attendees = JSON.parse(sessionStorage.getItem("attendees")) || [];
   const handleReEnter = () => {
     navigate("/guestForm")
   }
@@ -27,11 +27,11 @@ const ConfrimPass = () => {
       empty: isEmpty,
     };
 
-    const roll_no = localStorage.getItem("roll_no");
-    const name = localStorage.getItem("name");
-    const branch = localStorage.getItem("branch");
-    const program = localStorage.getItem("program");
-    const batch = localStorage.getItem("batch");
+    const roll_no = sessionStorage.getItem("roll_no");
+    const name = sessionStorage.getItem("name");
+    const branch = sessionStorage.getItem("branch");
+    const program = sessionStorage.getItem("program");
+    const batch = sessionStorage.getItem("batch");
 
 
     await axios
@@ -81,10 +81,10 @@ const ConfrimPass = () => {
             <div className="column-container" style={{ display: "flex", flexDirection: "column" }}>
               <h1>Student Details</h1>
               <ul style={{ listStyleType: "none" }}>
-                <li>Student Name: {localStorage.getItem("name")}</li>
-                <li>Roll No: {localStorage.getItem("roll_no")}</li>
-                <li>Branch: {localStorage.getItem("branch")}</li>
-                <li>Program: {localStorage.getItem("program")}</li>
+                <li>Student Name: {sessionStorage.getItem("name")}</li>
+                <li>Roll No: {sessionStorage.getItem("roll_no")}</li>
+                <li>Branch: {sessionStorage.getItem("branch")}</li>
+                <li>Program: {sessionStorage.getItem("program")}</li>
               </ul>
             </div>
 

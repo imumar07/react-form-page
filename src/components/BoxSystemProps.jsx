@@ -158,9 +158,9 @@ const BoxSystemProps = () => {
             const dataReceived = response.data;
             for (let i in dataReceived) {
               if (i === "name") {
-                localStorage.setItem("name", transformName(dataReceived[i]));
+                sessionStorage.setItem("name", transformName(dataReceived[i]));
               } else {
-                localStorage.setItem(i, dataReceived[i]);
+                sessionStorage.setItem(i, dataReceived[i]);
               }
             }
             setTimeout(() => {

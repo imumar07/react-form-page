@@ -20,8 +20,8 @@ import "./UserForm.css";
 const UserForm = () => {
   const navigate = useNavigate();
   const [yesLoading, setYesLoading] = useState(false);
-  const rollNo = localStorage.getItem("roll_no");
-  const aadhar = localStorage.getItem("aadhar");
+  const rollNo = sessionStorage.getItem("roll_no");
+  const aadhar = sessionStorage.getItem("aadhar");
 
 
   const hasMounted = React.useRef(false);
@@ -44,11 +44,11 @@ const UserForm = () => {
   }, []);
 
   const handleYesChange = () => {
-    // const roll_no = localStorage.getItem("roll_no");
-    // const name = localStorage.getItem("name");
-    // const branch = localStorage.getItem("branch");
-    // const program = localStorage.getItem("program");
-    // const batch = localStorage.getItem("batch");
+    // const roll_no = sessionStorage.getItem("roll_no");
+    // const name = sessionStorage.getItem("name");
+    // const branch = sessionStorage.getItem("branch");
+    // const program = sessionStorage.getItem("program");
+    // const batch = sessionStorage.getItem("batch");
 
     // // Log the retrieved values for debugging purposes
     // console.log("Roll No:", roll_no, "Name:", name, "Branch:", branch, "Program:", program, "Batch:", batch);
@@ -56,9 +56,9 @@ const UserForm = () => {
   };
 
   const handleAlreadyRegisterd = () => {
-    const roll_no = localStorage.getItem("roll_no");
-    const name = localStorage.getItem("name");
-    const branch = localStorage.getItem("branch");
+    const roll_no = sessionStorage.getItem("roll_no");
+    const name = sessionStorage.getItem("name");
+    const branch = sessionStorage.getItem("branch");
 
     // Log the retrieved values for debugging purposes
     console.log("Roll No:", roll_no, "Name:", name, "Branch:", branch);
@@ -73,14 +73,18 @@ const UserForm = () => {
       .then((response) => {
         setYesLoading(false);
         if (response.status === 200) {
+          setYesLoading(true);
+          sessionStorage.setItem("pass_url", response.data.pass_url);
           notify("Your response is already stored please download the pass 😇");
           setTimeout(() => {
             navigate("/alreadyRegisteredCard");
           }, 2500)
-          console.error("Already registered:", error.response.data.error);
+          console.error("Already registered:", response.data.error);
         } else {
           console.error("Failed to check", response.data.message);
         }
+        
+
       })
       .catch((error) => {
         setYesLoading(false);
@@ -93,7 +97,7 @@ const UserForm = () => {
     // setModalOpen(true);
     notify("Response Have Been Submitted 🚀");
     setTimeout(() => {
-      localStorage.clear();
+      sessionStorage.clear();
       navigate("/");
     }, 2000)
   };
@@ -111,7 +115,7 @@ const UserForm = () => {
     });
     // setModalOpen(false);
     // setTimeout(() => {
-    //   localStorage.clear();
+    //   sessionStorage.clear();
     //   navigate("/");
     // }, 2000)
   };
@@ -144,17 +148,17 @@ const UserForm = () => {
                 <FontAwesomeIcon size="5x" icon={faUserGraduate} />
               </div>
               <div className="column-container">
-                <h2>{localStorage.getItem("name")}</h2>
+                <h2>{sessionStorage.getItem("name")}</h2>
               </div>
               <div className="column-container">
                 <p style={{ fontWeight: "bold" }}>
-                  {localStorage.getItem("roll_no")}
+                  {sessionStorage.getItem("roll_no")}
                 </p>
               </div>
               <div className="column-container">
                 <p style={{ fontWeight: "bold" }}>
-                  {localStorage.getItem("program") === "MBA" ? localStorage.getItem("branch") :
-                    localStorage.getItem("program") + "/" + localStorage.getItem("branch")}
+                  {sessionStorage.getItem("program") === "MBA" ? sessionStorage.getItem("branch") :
+                    sessionStorage.getItem("program") + "/" + sessionStorage.getItem("branch")}
                 </p>
               </div>
               <div className="descp">

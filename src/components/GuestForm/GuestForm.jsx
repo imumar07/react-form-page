@@ -18,7 +18,7 @@ import {
 
 const GuestForm = () => {
   const navigate = useNavigate();
-  const roll_no = localStorage.getItem("roll_no");
+  const roll_no = sessionStorage.getItem("roll_no");
 
   const [attendees, setAttendees] = useState([]);
   const [errors, setErrors] = useState([]);
@@ -101,7 +101,7 @@ const GuestForm = () => {
     setErrors(newErrors);
 
     if (valid) {
-      localStorage.setItem("attendees", JSON.stringify(attendees))
+      sessionStorage.setItem("attendees", JSON.stringify(attendees))
       navigate("/confrimPass")
       // axios
       //   .post(`${Api}insert_guests", attendees)
