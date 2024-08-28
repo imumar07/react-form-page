@@ -228,7 +228,7 @@ const StudentPass = () => {
                   <span>Phone No : {guest.phone_no}</span>
                 </div>
                 <div className="generate-pass-note">
-                  <p>* Please collect entry pass from the security *</p>
+                  <p>* Please carry pass for enrty *</p>
                 </div>
               </div>
             </div>
