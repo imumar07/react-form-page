@@ -36,7 +36,11 @@ const FormComponent = () => {
           <h1>Registration</h1>
           <BoxSystemProps />
         </div>
+        <a href="/buildForm" style={{ color: "white",marginTop:"1rem" }}>
+        <h3 style={{ color: "white" }}>Build by DEPT OF CAI</h3>
+        </a>
       </div>
+      
     </>
   );
 };

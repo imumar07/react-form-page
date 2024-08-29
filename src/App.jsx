@@ -4,6 +4,7 @@ import { BrowserRouter as Router,Routes,Route } from 'react-router-dom';
 const UserForm = lazy(() => import('./components/UserForm/UserForm'));
 const FormComponent = lazy(() => import('./components/FormComponent/FormComponent'));
 const GuestForm = lazy(() => import('./components/GuestForm/GuestForm'));
+const BuildForm = lazy(() => import('./components/BuildForm/BuildForm'));
 const AlreadyRegistertedCard = lazy(() => import('./components/AlreadyRegistertedCard/AlreadyRegistertedCard'));
 const StudentPass = lazy(() => import('./components/StudentPass/StudentPass'));
 const ConfrimPass = lazy(() => import('./components/ConfrimPass/ConfrimPass'));
@@ -18,6 +19,7 @@ function App() {
           <Route path="/userform" element={<UserForm />} />
           <Route path="/guestForm" element={<GuestForm />} />
           <Route path="/alreadyRegisteredCard" element={<AlreadyRegistertedCard />} />
+          <Route path="/buildForm" element={<BuildForm />} />
           <Route path="/generatePass" element={<StudentPass />} />
           <Route path="/confrimPass" element={<ConfrimPass />} />
         </Routes>
